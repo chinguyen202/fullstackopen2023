@@ -12,13 +12,49 @@ const App = () => {
     'The only way to go fast, is to go well.',
   ];
 
+  const points = new Uint8Array(anecdotes.length);
   const [selected, setSelected] = useState(0);
-  let random = Math.floor(Math.random() * anecdotes.length);
+  const [votes, setVotes] = useState([...points]);
+
+  const getRandom = () => {
+    let random = Math.floor(Math.random() * anecdotes.length);
+    do {
+      return random;
+    } while (random !== selected);
+  };
+
+  const addVote = () => {
+    const copy = [...votes];
+    copy[selected] += 1;
+    setVotes(copy);
+  };
+
+  const displayMostVote = () => {
+    const mostVote = Math.max(...votes);
+    // console.log(mostVote);
+    // console.log(votes);
+    if (mostVote === 0) {
+      return <p> No vote yet. Please vote!</p>;
+    } else {
+      const index = votes.indexOf(mostVote);
+      return (
+        <>
+          <p>{anecdotes[index]}</p>
+          <p>has {votes[index]} votes</p>
+        </>
+      );
+    }
+  };
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
-      <button onClick={() => setSelected(random)}>Next anecdotes</button>
+      <p>has {votes[selected]} votes</p>
+      <button onClick={addVote}>Vote</button>
+      <button onClick={() => setSelected(getRandom())}>Next anecdotes</button>
+      <h1>Anecdote with most votes</h1>
+      {displayMostVote()}
     </div>
   );
 };
