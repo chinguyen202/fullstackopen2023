@@ -24,10 +24,22 @@ const App = () => {
     copy[selected] += 1;
     setPoints(copy);
   };
+  const findMostVoted = (array) => {
+    let max = array[0];
+    for (let i = 1; i < array.length; i++) {
+      if (array[i] > max) {
+        max = array[i];
+      }
+    }
+    return max;
+  };
 
   return (
     <>
-      <div>{anecdotes[selected]}</div>
+      <div>
+        <h2>Anecdote of the day</h2>
+        <p>{anecdotes[selected]}</p>
+      </div>
       <p>has {points[selected]} votes</p>
       <button onClick={handleVote}>Vote</button>
       <button
@@ -35,6 +47,11 @@ const App = () => {
       >
         Next anecdote
       </button>
+      <div>
+        <h2>Anecdote with most votes</h2>
+        <p>{anecdotes[findMostVoted(points)]}</p>
+        <p>has {findMostVoted(points)} votes</p>
+      </div>
     </>
   );
 };
