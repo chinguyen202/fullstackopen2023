@@ -13,10 +13,19 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  const getRandomArbitrary = (min, max) => {
+    return Math.floor(Math.random() * (max - min) + min);
+  };
+  console.log('SELECT:', selected);
 
   return (
     <>
       <div>{anecdotes[selected]}</div>
+      <button
+        onClick={() => setSelected(getRandomArbitrary(0, anecdotes.length - 1))}
+      >
+        Next anecdote
+      </button>
     </>
   );
 };
