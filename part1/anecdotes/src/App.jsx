@@ -16,11 +16,20 @@ const App = () => {
   const getRandomArbitrary = (min, max) => {
     return Math.floor(Math.random() * (max - min) + min);
   };
-  console.log('SELECT:', selected);
+  const [points, setPoints] = useState(new Uint8Array(anecdotes.length - 1));
+
+  const copy = [...points];
+  const handleVote = () => {
+    console.log(`Vote on ${selected}`);
+    copy[selected] += 1;
+    setPoints(copy);
+  };
 
   return (
     <>
       <div>{anecdotes[selected]}</div>
+      <p>has {points[selected]} votes</p>
+      <button onClick={handleVote}>Vote</button>
       <button
         onClick={() => setSelected(getRandomArbitrary(0, anecdotes.length - 1))}
       >
