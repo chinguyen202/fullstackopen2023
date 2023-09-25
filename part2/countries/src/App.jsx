@@ -51,7 +51,7 @@ const App = () => {
         <p>Too many matches, specify another filter</p>
       )}
       {searchResult.length > 1 && (
-        <div>
+        <>
           {searchResult.map((country, index) => (
             <>
               <p key={index}>
@@ -62,7 +62,7 @@ const App = () => {
               </p>
             </>
           ))}
-        </div>
+        </>
       )}
       {country && <Country country={country} key={country.capital} />}
     </>
