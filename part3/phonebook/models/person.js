@@ -17,8 +17,44 @@ mongoose
   });
 
 const phonebookSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    required: true,
+    min: [3, 'Name should have at least 3 characters'],
+  },
+  number: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function (value) {
+        // Check if the phone number has a length of 8 or more
+        if (value.length < 8) {
+          return false;
+        }
+        // Check if the phone number is in the correct format
+        const parts = value.split('-');
+        if (parts.length !== 2) {
+          return false;
+        }
+        // Check if the first part has two or three numbers
+        const firstPart = parts[0];
+        if (
+          firstPart.length < 2 ||
+          firstPart.length > 3 ||
+          !/^\d+$/.test(firstPart)
+        ) {
+          return false;
+        }
+        // Check if the second part consists of numbers
+        const secondPart = parts[1];
+        if (!/^\d+$/.test(secondPart)) {
+          return false;
+        }
+        return true;
+      },
+      message: 'Invalid phone number format',
+    },
+  },
 });
 
 phonebookSchema.set('toJSON', {
