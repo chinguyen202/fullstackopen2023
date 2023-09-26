@@ -54,7 +54,12 @@ const App = () => {
           setNewName(''), setNewNumber('');
         })
         .catch((error) => {
-          alert(`Error in creating entry: ${error.message}`);
+          setError(true);
+          setMessage(error.response.data.error);
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
+          setNewName(''), setNewNumber('');
         });
     } else {
       if (
@@ -70,7 +75,12 @@ const App = () => {
             setNewName(''), setNewNumber('');
           })
           .catch((error) => {
-            alert(`Error in updating phonebook: ${error.message}`);
+            setError(true);
+            setMessage(error.response.data.error);
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
+            setNewName(''), setNewNumber('');
           });
       }
     }
@@ -97,7 +107,7 @@ const App = () => {
     }
   };
 
-  const searchResult = persons.filter((person) =>
+  const searchResult = persons?.filter((person) =>
     person.name.toLowerCase().includes(search.toLowerCase())
   );
 

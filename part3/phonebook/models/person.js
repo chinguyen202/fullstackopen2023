@@ -20,7 +20,7 @@ const phonebookSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    min: [3, 'Name should have at least 3 characters'],
+    minLength: 3,
   },
   number: {
     type: String,
