@@ -51,8 +51,7 @@ const blogs = [
   },
 ];
 
-test('dummym returns one', () => {
-  const blogs = [];
+test('dummy always returns one', () => {
   const result = listHelper.dummy(blogs);
   expect(result).toBe(1);
 });
@@ -83,7 +82,6 @@ describe('total likes', () => {
 describe('favorite blog', () => {
   test('return favorite blog is the one has most likes', () => {
     const result = listHelper.favoriteBlog(blogs);
-    console.log('RESULT:', result);
     expect(result).toEqual({
       title: 'Canonical string reduction',
       author: 'Edsger W. Dijkstra',
