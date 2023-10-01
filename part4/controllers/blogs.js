@@ -1,10 +1,11 @@
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
+const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
-blogsRouter.get('/', (request, response) => {
-  Blog.find({}).then((blogs) => {
-    response.json(blogs);
-  });
+blogsRouter.get('/', async (request, response) => {
+  const blogs = await Blog.find({});
+  response.json(blogs);
 });
 
 blogsRouter.post('/', async (request, response) => {
@@ -12,14 +13,20 @@ blogsRouter.post('/', async (request, response) => {
   if (!body.title || !body.url) {
     return response.status(400).end();
   }
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  console.log('TOKEN', request.token);
+  const user = await User.findById(decodedToken.id);
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes || 0,
+    likes: body.likes === undefined ? 0 : body.likes,
+    user: user._id,
   });
 
   const savedBlog = await blog.save();
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
   response.status(201).json(savedBlog);
 });
 
