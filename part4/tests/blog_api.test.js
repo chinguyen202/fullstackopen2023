@@ -67,17 +67,27 @@ describe('viewing a specific blog', () => {
 });
 
 describe('addition of a new blog', () => {
-  test('succeeds with valid data', async () => {
-    const newBlog = {
-      title: 'Canonical string reduction',
-      author: 'Edsger W. Dijkstra',
-      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-      likes: 12,
-    };
+  const validBlog = {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 12,
+  };
+  test('fail with code 401 if token is not provided', async () => {
+    await api
+      .post('/api/blogs')
+      .send(validBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/);
+  });
+
+  test('succeeds with valid data and valid token', async () => {
+    const token = await helper.generateToken();
 
     await api
       .post('/api/blogs')
-      .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
+      .send(validBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
@@ -89,11 +99,17 @@ describe('addition of a new blog', () => {
   });
 
   test('fails with status code 400 if data invalid', async () => {
+    const token = await helper.generateToken();
+
     const newBlog = {
       author: 'John Smith',
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(400);
 
     const blogsAtEnd = await helper.blogsInDb();
 
@@ -101,6 +117,8 @@ describe('addition of a new blog', () => {
   });
 
   test('likes is 0 if it is missing from request', async () => {
+    const token = await helper.generateToken();
+
     const newBlog = {
       title: 'Canonical string reduction',
       author: 'Edsger W. Dijkstra',
@@ -109,6 +127,7 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -123,9 +142,8 @@ describe('addition of a new blog', () => {
 
 describe('deletion of a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
-    const blogsAtStart = await helper.blogsInDb();
-    const blogToDelete = blogsAtStart[0];
-
+    const firstUserInDb = await helper.usersInDb();
+    const blogToDelete = firstUserInDb[0].blogs;
     await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
