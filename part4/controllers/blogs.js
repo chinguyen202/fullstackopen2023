@@ -4,7 +4,11 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({});
+  const blogs = await Blog.find({}).populate('user', {
+    username: 1,
+    name: 1,
+    id: 1,
+  });
   response.json(blogs);
 });
 
@@ -13,8 +17,11 @@ blogsRouter.post('/', async (request, response) => {
   if (!body.title || !body.url) {
     return response.status(400).end();
   }
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  console.log('TOKEN', request.token);
+  const token = request.token;
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).end();
+  }
   const user = await User.findById(decodedToken.id);
   const blog = new Blog({
     title: body.title,
@@ -42,7 +49,8 @@ blogsRouter.get('/:id', async (request, response) => {
 });
 
 blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id);
+  const blogId = request.params.id;
+  await Blog.findByIdAndRemove(blogId);
   response.status(204).end();
 });
 
