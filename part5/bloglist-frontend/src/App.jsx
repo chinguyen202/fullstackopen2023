@@ -16,6 +16,16 @@ const App = () => {
   const [url, setUrl] = useState('');
   const [error, setError] = useState('false');
   const [message, setMessage] = useState('');
+  const [addBlogVisible, setAddBlogVisible] = useState(false);
+  const [loginVisible, setLoginVisible] = useState(false);
+  const hideFormWhenVisible = {
+    display: addBlogVisible ? 'none' : '',
+  };
+  const showFormWhenVisible = { display: addBlogVisible ? '' : 'none' };
+  const hideWhenVisible = {
+    display: loginVisible ? 'none' : '',
+  };
+  const showWhenVisible = { display: loginVisible ? '' : 'none' };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -30,6 +40,7 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
+      setLoginVisible(false);
     } catch (error) {
       setMessage('Wrong credentials');
       setError(true);
@@ -58,6 +69,7 @@ const App = () => {
         setTittle('');
         setAuthor('');
         setUrl('');
+        setAddBlogVisible(false);
       });
     } catch (error) {
       setMessage(error.response.data.message);
@@ -84,37 +96,47 @@ const App = () => {
     }
   }, []);
 
-  if (user === null) {
-    return (
-      <LoginForm
-        username={username}
-        setPassword={setPassword}
-        setUsername={setUsername}
-        password={password}
-        handleLogin={handleLogin}
-        message={message}
-        error={error}
-      />
-    );
-  }
-
   return (
     <>
       {message && <Notification message={message} error={error} />}
-
       <h2>blogs</h2>
-      <p>
-        User logged in {user.name} <button onClick={logout}>Log out</button>
-      </p>
-      <AddBlogForm
-        title={title}
-        setTitle={setTittle}
-        author={author}
-        setAuthor={setAuthor}
-        url={url}
-        setUrl={setUrl}
-        addBlog={addBlog}
-      />
+      <div style={hideWhenVisible}>
+        <button onClick={() => setLoginVisible(true)}>login</button>
+      </div>
+      <div style={showWhenVisible}>
+        <LoginForm
+          username={username}
+          setPassword={setPassword}
+          setUsername={setUsername}
+          password={password}
+          handleLogin={handleLogin}
+          message={message}
+          error={error}
+        />
+        <button onClick={() => setLoginVisible(false)}>cancel</button>
+      </div>
+      {user != null && (
+        <p>
+          User logged in {user.name} <button onClick={logout}>Log out</button>
+        </p>
+      )}
+
+      <div style={showFormWhenVisible}>
+        <AddBlogForm
+          title={title}
+          setTitle={setTittle}
+          author={author}
+          setAuthor={setAuthor}
+          url={url}
+          setUrl={setUrl}
+          addBlog={addBlog}
+        />
+        <button onClick={() => setAddBlogVisible(false)}>cancel</button>
+      </div>
+      <div style={hideFormWhenVisible}>
+        <button onClick={() => setAddBlogVisible(true)}>add blog</button>
+      </div>
+
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}

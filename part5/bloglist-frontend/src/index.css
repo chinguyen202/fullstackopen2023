@@ -17,3 +17,13 @@
   padding: 10px;
   margin-bottom: 10px;
 }
+
+.hideWhenVisible,
+.hideFormWhenVisible {
+  display: 'none';
+}
+
+.showWhenVisible,
+.showFormWhenVisible {
+  display: block;
+}
