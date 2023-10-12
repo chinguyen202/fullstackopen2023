@@ -19,11 +19,13 @@
 }
 
 .hideWhenVisible,
-.hideFormWhenVisible {
+.hideFormWhenVisible,
+.hideBlogWhenVisible {
   display: 'none';
 }
 
 .showWhenVisible,
-.showFormWhenVisible {
+.showFormWhenVisible,
+.showBlogWhenVisible {
   display: block;
 }

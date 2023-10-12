@@ -1,23 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import LoginForm from './components/LoginForm';
 import AddBlogForm from './components/AddBlogForm';
-import Notification from './components/Notifcation';
+import Notification from './components/Notification';
 
 const App = () => {
+  const blogRef = useRef();
+
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [title, setTittle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [url, setUrl] = useState('');
   const [error, setError] = useState('false');
   const [message, setMessage] = useState('');
   const [addBlogVisible, setAddBlogVisible] = useState(false);
   const [loginVisible, setLoginVisible] = useState(false);
+  const [showBlog, setShowBlog] = useState(false);
   const hideFormWhenVisible = {
     display: addBlogVisible ? 'none' : '',
   };
@@ -27,19 +25,12 @@ const App = () => {
   };
   const showWhenVisible = { display: loginVisible ? '' : 'none' };
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-
+  const login = async (loginObject) => {
     try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
+      const user = await loginService.login(loginObject);
       window.localStorage.setItem('appUser', JSON.stringify(user));
       blogService.setToken(user.token);
       setUser(user);
-      setUsername('');
-      setPassword('');
       setLoginVisible(false);
     } catch (error) {
       setMessage('Wrong credentials');
@@ -51,24 +42,16 @@ const App = () => {
     }
   };
 
-  const addBlog = (event) => {
-    event.preventDefault();
+  const addBlog = (blogObject) => {
     try {
-      const newBlog = {
-        title: title,
-        author: author,
-        url: url,
-      };
-      blogService.create(newBlog).then((returnBlog) => {
+      blogService.create(blogObject).then((returnBlog) => {
         setMessage(
           `a new blog ${returnBlog.title} by ${returnBlog.author} added!`
         );
         setTimeout(() => {
           setMessage(null);
         }, 5000);
-        setTittle('');
-        setAuthor('');
-        setUrl('');
+
         setAddBlogVisible(false);
       });
     } catch (error) {
@@ -86,6 +69,10 @@ const App = () => {
     setUser(null);
   };
 
+  const handleHide = () => {
+    setShowBlog(false);
+  };
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('appUser');
     if (loggedUserJSON) {
@@ -100,19 +87,13 @@ const App = () => {
     <>
       {message && <Notification message={message} error={error} />}
       <h2>blogs</h2>
-      <div style={hideWhenVisible}>
-        <button onClick={() => setLoginVisible(true)}>login</button>
-      </div>
+      {user == null && (
+        <div style={hideWhenVisible}>
+          <button onClick={() => setLoginVisible(true)}>login</button>
+        </div>
+      )}
       <div style={showWhenVisible}>
-        <LoginForm
-          username={username}
-          setPassword={setPassword}
-          setUsername={setUsername}
-          password={password}
-          handleLogin={handleLogin}
-          message={message}
-          error={error}
-        />
+        <LoginForm login={login} message={message} error={error} />
         <button onClick={() => setLoginVisible(false)}>cancel</button>
       </div>
       {user != null && (
@@ -122,15 +103,7 @@ const App = () => {
       )}
 
       <div style={showFormWhenVisible}>
-        <AddBlogForm
-          title={title}
-          setTitle={setTittle}
-          author={author}
-          setAuthor={setAuthor}
-          url={url}
-          setUrl={setUrl}
-          addBlog={addBlog}
-        />
+        <AddBlogForm createBlog={addBlog} />
         <button onClick={() => setAddBlogVisible(false)}>cancel</button>
       </div>
       <div style={hideFormWhenVisible}>
