@@ -7,8 +7,6 @@ import AddBlogForm from './components/AddBlogForm';
 import Notification from './components/Notification';
 
 const App = () => {
-  const blogRef = useRef();
-
   const [blogs, setBlogs] = useState([]);
   const [updateBlogs, setUpdateBlogs] = useState(false);
   const [user, setUser] = useState(null);
@@ -78,14 +76,32 @@ const App = () => {
     }
   };
 
+  const deleteBlog = async (id) => {
+    try {
+      await blogService.remove(id);
+      setUpdateBlogs(true);
+    } catch (error) {
+      setError(true);
+      setMessage('Error in deleting the blog');
+      setTimeout(() => {
+        setMessage(null);
+        setError(false);
+      }, 5000);
+    }
+  };
+
   const logout = () => {
     window.localStorage.removeItem('appUser');
     setUser(null);
   };
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, [updateBlogs]);
+    blogService.getAll().then((blogs) => {
+      blogs.sort((a, b) => b.likes - a.likes);
+      setBlogs(blogs);
+    }),
+      [updateBlogs];
+  });
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('appUser');
@@ -124,7 +140,13 @@ const App = () => {
       </div>
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} updateLike={updateLike} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          updateLike={updateLike}
+          deleteBlog={deleteBlog}
+          logInUser={user}
+        />
       ))}
     </>
   );
