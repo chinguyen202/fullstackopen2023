@@ -10,12 +10,12 @@ const App = () => {
   const blogRef = useRef();
 
   const [blogs, setBlogs] = useState([]);
+  const [updateBlogs, setUpdateBlogs] = useState(false);
   const [user, setUser] = useState(null);
   const [error, setError] = useState('false');
   const [message, setMessage] = useState('');
   const [addBlogVisible, setAddBlogVisible] = useState(false);
   const [loginVisible, setLoginVisible] = useState(false);
-  const [showBlog, setShowBlog] = useState(false);
   const hideFormWhenVisible = {
     display: addBlogVisible ? 'none' : '',
   };
@@ -48,10 +48,10 @@ const App = () => {
         setMessage(
           `a new blog ${returnBlog.title} by ${returnBlog.author} added!`
         );
+        setUpdateBlogs(true);
         setTimeout(() => {
           setMessage(null);
         }, 5000);
-
         setAddBlogVisible(false);
       });
     } catch (error) {
@@ -64,14 +64,28 @@ const App = () => {
     }
   };
 
+  const updateLike = async (blogObject, id) => {
+    try {
+      await blogService.update(blogObject, id);
+      setUpdateBlogs(true);
+    } catch (error) {
+      setError(true);
+      setMessage(error.response.data.message);
+      setTimeout(() => {
+        setMessage(null);
+        setError(false);
+      }, 5000);
+    }
+  };
+
   const logout = () => {
     window.localStorage.removeItem('appUser');
     setUser(null);
   };
 
-  const handleHide = () => {
-    setShowBlog(false);
-  };
+  useEffect(() => {
+    blogService.getAll().then((blogs) => setBlogs(blogs));
+  }, [updateBlogs]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('appUser');
@@ -79,7 +93,6 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
       blogService.setToken(user.token);
-      blogService.getAll().then((blogs) => setBlogs(blogs));
     }
   }, []);
 
@@ -111,7 +124,7 @@ const App = () => {
       </div>
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateLike={updateLike} />
       ))}
     </>
   );

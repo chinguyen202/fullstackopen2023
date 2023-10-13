@@ -1,12 +1,22 @@
 import { useState } from 'react';
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, updateLike }) => {
   const [visible, setVisible] = useState(false);
   const hideWhenVisible = { display: visible ? 'none' : '' };
   const showWhenVisible = { display: visible ? '' : 'none' };
 
   const toggleVisibility = () => {
     setVisible(!visible);
+  };
+
+  const addLike = () => {
+    const blogUpdate = {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1,
+    };
+    updateLike(blogUpdate, blog.id);
   };
 
   const blogStyle = {
@@ -30,9 +40,10 @@ const Blog = ({ blog }) => {
         <p>{blog.author}</p>
         <p>
           {blog.likes}
-          <button>like</button>
+          <button onClick={addLike}>like</button>
         </p>
         <p>{blog.url}</p>
+        <p>{blog.user.name}</p>
       </div>
     </div>
   );

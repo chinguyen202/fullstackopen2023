@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const AddBlogForm = ({ createBlog }) => {
-  const [title, setTittle] = useState('');
+  const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
 
@@ -12,7 +12,7 @@ const AddBlogForm = ({ createBlog }) => {
       author: author,
       url: url,
     });
-    setTittle('');
+    setTitle('');
     setAuthor('');
     setUrl('');
   };

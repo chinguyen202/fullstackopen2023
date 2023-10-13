@@ -55,21 +55,20 @@ blogsRouter.delete('/:id', async (request, response) => {
   response.status(204).end();
 });
 
-blogsRouter.put('/:id', (request, response, next) => {
-  const body = request.body;
-
-  const blog = {
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-  };
-
-  Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-    .then((updatedBlog) => {
-      response.json(updatedBlog);
-    })
-    .catch((error) => next(error));
+blogsRouter.put('/:id', async (request, response) => {
+  const { title, author, url, likes } = request.body;
+  const blogId = request.params.id;
+  const requestBlog = await Blog.findById(blogId);
+  const user = requestBlog.user;
+  if (requestBlog) {
+    const result = await Blog.findOneAndReplace(
+      { _id: blogId },
+      { user, likes, url, author, title }
+    );
+    response.json(result);
+  } else {
+    response.status(404).json({ error: 'Blog can not be found' });
+  }
 });
 
 module.exports = blogsRouter;
