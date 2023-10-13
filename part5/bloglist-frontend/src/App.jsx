@@ -5,8 +5,10 @@ import loginService from './services/login';
 import LoginForm from './components/LoginForm';
 import AddBlogForm from './components/AddBlogForm';
 import Notification from './components/Notification';
+import Toggable from './components/Toggable';
 
 const App = () => {
+  const blogFormRef = useRef();
   const [blogs, setBlogs] = useState([]);
   const [updateBlogs, setUpdateBlogs] = useState(false);
   const [user, setUser] = useState(null);
@@ -90,6 +92,12 @@ const App = () => {
     }
   };
 
+  const blogForm = () => (
+    <Toggable buttonLabel="new blog" ref={blogFormRef}>
+      <AddBlogForm createBlog={addBlog} />
+    </Toggable>
+  );
+
   const logout = () => {
     window.localStorage.removeItem('appUser');
     setUser(null);
@@ -116,28 +124,23 @@ const App = () => {
     <>
       {message && <Notification message={message} error={error} />}
       <h2>blogs</h2>
-      {user == null && (
+      {!user && (
         <div style={hideWhenVisible}>
           <button onClick={() => setLoginVisible(true)}>login</button>
         </div>
       )}
       <div style={showWhenVisible}>
-        <LoginForm login={login} message={message} error={error} />
+        <LoginForm login={login} />
         <button onClick={() => setLoginVisible(false)}>cancel</button>
       </div>
-      {user != null && (
-        <p>
-          User logged in {user.name} <button onClick={logout}>Log out</button>
-        </p>
+      {user && (
+        <div>
+          <p>
+            User logged in {user.name} <button onClick={logout}>Log out</button>
+          </p>
+          {blogForm()}
+        </div>
       )}
-
-      <div style={showFormWhenVisible}>
-        <AddBlogForm createBlog={addBlog} />
-        <button onClick={() => setAddBlogVisible(false)}>cancel</button>
-      </div>
-      <div style={hideFormWhenVisible}>
-        <button onClick={() => setAddBlogVisible(true)}>add blog</button>
-      </div>
 
       {blogs.map((blog) => (
         <Blog
