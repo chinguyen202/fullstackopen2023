@@ -9,6 +9,7 @@ import Toggable from './components/Toggable';
 
 const App = () => {
   const blogFormRef = useRef();
+  const loginFormRef = useRef();
   const [blogs, setBlogs] = useState([]);
   const [updateBlogs, setUpdateBlogs] = useState(false);
   const [user, setUser] = useState(null);
@@ -16,14 +17,6 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [addBlogVisible, setAddBlogVisible] = useState(false);
   const [loginVisible, setLoginVisible] = useState(false);
-  const hideFormWhenVisible = {
-    display: addBlogVisible ? 'none' : '',
-  };
-  const showFormWhenVisible = { display: addBlogVisible ? '' : 'none' };
-  const hideWhenVisible = {
-    display: loginVisible ? 'none' : '',
-  };
-  const showWhenVisible = { display: loginVisible ? '' : 'none' };
 
   const login = async (loginObject) => {
     try {
@@ -31,7 +24,7 @@ const App = () => {
       window.localStorage.setItem('appUser', JSON.stringify(user));
       blogService.setToken(user.token);
       setUser(user);
-      setLoginVisible(false);
+      // setLoginVisible(false);
     } catch (error) {
       setMessage('Wrong credentials');
       setError(true);
@@ -52,7 +45,7 @@ const App = () => {
         setTimeout(() => {
           setMessage(null);
         }, 5000);
-        setAddBlogVisible(false);
+        // setAddBlogVisible(false);
       });
     } catch (error) {
       setMessage(error.response.data.message);
@@ -92,6 +85,12 @@ const App = () => {
     }
   };
 
+  const loginForm = () => (
+    <Toggable buttonLabel="login" ref={loginFormRef}>
+      <LoginForm login={login} />
+    </Toggable>
+  );
+
   const blogForm = () => (
     <Toggable buttonLabel="new blog" ref={blogFormRef}>
       <AddBlogForm createBlog={addBlog} />
@@ -124,15 +123,8 @@ const App = () => {
     <>
       {message && <Notification message={message} error={error} />}
       <h2>blogs</h2>
-      {!user && (
-        <div style={hideWhenVisible}>
-          <button onClick={() => setLoginVisible(true)}>login</button>
-        </div>
-      )}
-      <div style={showWhenVisible}>
-        <LoginForm login={login} />
-        <button onClick={() => setLoginVisible(false)}>cancel</button>
-      </div>
+      {!user && <>{loginForm()}</>}
+
       {user && (
         <div>
           <p>
