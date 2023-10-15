@@ -1,9 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { legacy_createStore as createStore } from 'redux';
+import { combineReducers, legacy_createStore as createStore } from 'redux';
 import { Provider } from 'react-redux';
 import App from './App';
-import reducer from './reducers/anecdoteReducer';
+import quoteReducer from './reducers/anecdoteReducer';
+import filterReducer from './reducers/filterReducer';
+
+const reducer = combineReducers({
+  quotes: quoteReducer,
+  filter: filterReducer,
+});
 
 export const store = createStore(reducer);
 
