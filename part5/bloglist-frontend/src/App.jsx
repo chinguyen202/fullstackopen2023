@@ -15,8 +15,6 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState('false');
   const [message, setMessage] = useState('');
-  const [addBlogVisible, setAddBlogVisible] = useState(false);
-  const [loginVisible, setLoginVisible] = useState(false);
 
   const login = async (loginObject) => {
     try {
@@ -24,7 +22,6 @@ const App = () => {
       window.localStorage.setItem('appUser', JSON.stringify(user));
       blogService.setToken(user.token);
       setUser(user);
-      // setLoginVisible(false);
     } catch (error) {
       setMessage('Wrong credentials');
       setError(true);
@@ -41,11 +38,11 @@ const App = () => {
         setMessage(
           `a new blog ${returnBlog.title} by ${returnBlog.author} added!`
         );
+        setError(false);
         setUpdateBlogs(true);
         setTimeout(() => {
           setMessage(null);
         }, 5000);
-        // setAddBlogVisible(false);
       });
     } catch (error) {
       setMessage(error.response.data.message);
@@ -86,7 +83,7 @@ const App = () => {
   };
 
   const loginForm = () => (
-    <Toggable buttonLabel="login" ref={loginFormRef}>
+    <Toggable buttonLabel="login" id="login" ref={loginFormRef}>
       <LoginForm login={login} />
     </Toggable>
   );
@@ -103,21 +100,17 @@ const App = () => {
   };
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      blogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(blogs);
-    }),
-      [updateBlogs];
-  });
-
-  useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('appUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
       blogService.setToken(user.token);
+      blogService.getAll().then((blogs) => {
+        blogs.sort((a, b) => b.likes - a.likes);
+        setBlogs(blogs);
+      });
     }
-  }, []);
+  }, [updateBlogs]);
 
   return (
     <>
@@ -134,15 +127,16 @@ const App = () => {
         </div>
       )}
 
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          updateLike={updateLike}
-          deleteBlog={deleteBlog}
-          logInUser={user}
-        />
-      ))}
+      {user &&
+        blogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            updateLike={updateLike}
+            deleteBlog={deleteBlog}
+            logInUser={user}
+          />
+        ))}
     </>
   );
 };

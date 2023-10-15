@@ -35,7 +35,7 @@ const Blog = ({ blog, updateLike, deleteBlog, logInUser }) => {
     marginBottom: 5,
   };
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blog">
       <div style={hideWhenVisible}>
         <p>
           {blog.title} - {blog.author}{' '}
@@ -49,7 +49,9 @@ const Blog = ({ blog, updateLike, deleteBlog, logInUser }) => {
         </p>
         <p>
           {blog.likes}
-          <button onClick={addLike}>like</button>
+          <button onClick={addLike} id="like-button">
+            like
+          </button>
         </p>
         <p>{blog.url}</p>
         <p>{blog.user.name}</p>
