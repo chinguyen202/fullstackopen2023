@@ -1,5 +1,6 @@
-import { store } from '../index';
+import store from '../store.js';
 import { createAnecdote } from '../reducers/anecdoteReducer';
+import { handleNotification } from '../reducers/notificationReducer.js';
 
 const AnecdoteForm = () => {
   const addAnecdote = (event) => {
@@ -7,6 +8,7 @@ const AnecdoteForm = () => {
     const content = event.target.quote.value;
     event.target.quote.value = '';
     store.dispatch(createAnecdote(content));
+    store.dispatch(handleNotification(`you created '${content}'`));
   };
   return (
     <div>

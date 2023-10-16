@@ -1,22 +1,25 @@
 import { useSelector } from 'react-redux';
-import { store } from '../index';
+import store from '../store';
 import { addVote } from '../reducers/anecdoteReducer';
+import { handleNotification } from '../reducers/notificationReducer';
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector((state) => {
-    console.log('STATE', state);
-    if (state.filter === '') {
-      return state.quotes.sort((a, b) => b.votes - a.votes);
+  const anecdotes = useSelector(({ filter, quotes }) => {
+    if (filter === '') {
+      return [...quotes].sort((a, b) => b.votes - a.votes);
     } else {
-      return state.quotes.filter((quote) =>
-        quote.content.includes(state.filter)
-      );
+      return quotes.filter((quote) => quote.content.includes(filter));
     }
   });
 
   const vote = (id) => {
     console.log('vote', id);
     store.dispatch(addVote(id));
+    store.dispatch(
+      handleNotification(
+        `you voted '${anecdotes.find((a) => a.id === id).content}'`
+      )
+    );
   };
 
   return (
