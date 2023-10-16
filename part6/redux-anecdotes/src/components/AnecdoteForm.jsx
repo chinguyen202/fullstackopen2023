@@ -1,14 +1,18 @@
-import store from '../store.js';
+import { useDispatch } from 'react-redux';
 import { createAnecdote } from '../reducers/anecdoteReducer';
 import { handleNotification } from '../reducers/notificationReducer.js';
+import anecdotes from '../services/anecdotes';
 
 const AnecdoteForm = () => {
-  const addAnecdote = (event) => {
+  const dispatch = useDispatch();
+
+  const addAnecdote = async (event) => {
     event.preventDefault();
     const content = event.target.quote.value;
     event.target.quote.value = '';
-    store.dispatch(createAnecdote(content));
-    store.dispatch(handleNotification(`you created '${content}'`));
+    const newQuote = await anecdotes.createNew(content);
+    dispatch(createAnecdote(newQuote));
+    dispatch(handleNotification(`you created '${content}'`));
   };
   return (
     <div>
