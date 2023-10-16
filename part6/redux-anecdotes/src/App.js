@@ -1,16 +1,15 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setQuotes } from './reducers/anecdoteReducer';
 import AnecdoteList from './components/AnecdoteList';
 import AnecdoteForm from './components/AnecdoteForm';
 import Filter from './components/Filter';
 import Notification from './components/Notification';
-import anecdotes from './services/anecdotes';
+import { initializeQuotes } from './reducers/anecdoteReducer';
 
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    anecdotes.getAll().then((quotes) => dispatch(setQuotes(quotes)));
+    dispatch(initializeQuotes());
   }, []);
 
   return (

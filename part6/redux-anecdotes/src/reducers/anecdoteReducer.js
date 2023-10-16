@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import anecdotes from '../services/anecdotes';
 
 const getId = () => (100000 * Math.random()).toFixed(0);
 
@@ -29,4 +30,30 @@ const quoteSlice = createSlice({
 
 export const { createAnecdote, addVote, appendQuote, setQuotes } =
   quoteSlice.actions;
+
+export const initializeQuotes = () => {
+  return async (dispatch) => {
+    const quotes = await anecdotes.getAll();
+    dispatch(setQuotes(quotes));
+  };
+};
+
+export const createQuote = (content) => {
+  return async (dispatch) => {
+    const newQuote = await anecdotes.createNew(content);
+    dispatch(appendQuote(newQuote));
+  };
+};
+
+export const voteQuote = (id) => {
+  return async (dispatch) => {
+    const quoteToChange = await anecdotes.getById(id);
+    const changedQuote = {
+      ...quoteToChange,
+      votes: quoteToChange.votes + 1,
+    };
+    await anecdotes.update(id, changedQuote);
+    dispatch(addVote(id));
+  };
+};
 export default quoteSlice.reducer;

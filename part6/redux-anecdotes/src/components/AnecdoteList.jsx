@@ -1,9 +1,9 @@
-import { useSelector } from 'react-redux';
-import store from '../store';
-import { addVote } from '../reducers/anecdoteReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { voteQuote } from '../reducers/anecdoteReducer';
 import { handleNotification } from '../reducers/notificationReducer';
 
 const AnecdoteList = () => {
+  const dispatch = useDispatch();
   const anecdotes = useSelector(({ filter, quotes }) => {
     if (filter === '') {
       return [...quotes].sort((a, b) => b.votes - a.votes);
@@ -14,10 +14,11 @@ const AnecdoteList = () => {
 
   const vote = (id) => {
     console.log('vote', id);
-    store.dispatch(addVote(id));
-    store.dispatch(
+    dispatch(voteQuote(id));
+    dispatch(
       handleNotification(
-        `you voted '${anecdotes.find((a) => a.id === id).content}'`
+        `you voted '${anecdotes.find((a) => a.id === id).content}'`,
+        5000
       )
     );
   };
