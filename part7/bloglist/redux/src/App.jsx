@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Blog from './components/Blog';
@@ -8,11 +8,10 @@ import LoginForm from './components/LoginForm';
 import AddBlogForm from './components/AddBlogForm';
 import Notification from './components/Notification';
 import Toggable from './components/Toggable';
-import { initializeBlogs, likeBlog } from './reducers/blogReducer.js';
+import { initializeBlogs } from './reducers/blogReducer.js';
 import { handleNotification } from './reducers/notificationReducer.js';
 import { setUser, removeUser } from './reducers/userReducer';
-import Users from './components/Users';
-import { initializeUsers } from './reducers/usersReducer';
+import UserList from './components/UserList';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -85,7 +84,7 @@ const App = () => {
           {blogForm()}
         </div>
       )}
-      <Users />
+      <UserList />
 
       {user && blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
     </>
