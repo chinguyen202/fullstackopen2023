@@ -1,18 +1,17 @@
-import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { likeBlog, removeBlog } from '../reducers/blogReducer';
 import { handleNotification } from '../reducers/notificationReducer';
 
-const Blog = ({ blog }) => {
+const Blog = () => {
+  const { id } = useParams();
   const dispatch = useDispatch();
+  const allBlogs = useSelector((state) => state.blogs);
+  const blog = allBlogs.find((blog) => blog.id === id);
   const logInUser = useSelector((state) => state.user);
-  const [visible, setVisible] = useState(false);
-  const hideWhenVisible = { display: visible ? 'none' : '' };
-  const showWhenVisible = { display: visible ? '' : 'none' };
 
-  const toggleVisibility = () => {
-    setVisible(!visible);
-  };
+  if (!blog) return null;
+
   const showButton = blog.user.username === logInUser.username ? true : false;
 
   const updateLike = async (id) => {
@@ -47,34 +46,20 @@ const Blog = ({ blog }) => {
     }
   };
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  };
   return (
-    <div style={blogStyle} className="blog">
-      <div style={hideWhenVisible}>
-        <p>
+    <div className="blog">
+      <div>
+        <h2>
           {blog.title} - {blog.author}{' '}
-          <button onClick={toggleVisibility}>View</button>
-        </p>
-      </div>
-      <div style={showWhenVisible} className="toggableContent">
+        </h2>
         <p>
-          {blog.title} - {blog.author}{' '}
-          <button onClick={toggleVisibility}>Hide</button>
-        </p>
-        <p>
-          {blog.likes}
+          {blog.likes} likes
           <button onClick={() => updateLike(blog.id)} id="like-button">
             like
           </button>
         </p>
-        <p>{blog.url}</p>
-        <p>{blog.user.name}</p>
+        <a href={blog.url}>{blog.url}</a>
+        <p>added by {blog.user.name}</p>
         {showButton && (
           <button onClick={() => deleteBlog(blog.id)}>Remove</button>
         )}

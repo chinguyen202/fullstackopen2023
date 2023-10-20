@@ -1,24 +1,24 @@
 import { useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-
-import Blog from './components/Blog';
-import blogService from './services/blogs';
-import loginService from './services/login';
-import LoginForm from './components/LoginForm';
-import AddBlogForm from './components/AddBlogForm';
-import Notification from './components/Notification';
-import Toggable from './components/Toggable';
-import { initializeBlogs } from './reducers/blogReducer.js';
-import { handleNotification } from './reducers/notificationReducer.js';
 import { setUser, removeUser } from './reducers/userReducer';
+
+import Notification from './components/Notification';
+import { initializeBlogs } from './reducers/blogReducer.js';
+import Home from './components/Home';
+import blogService from './services/blogs';
+import Toggable from './components/Toggable';
+import LoginForm from './components/LoginForm';
+import User from './components/User';
+import Blog from './components/Blog';
 import UserList from './components/UserList';
+import loginService from './services/login';
+import { handleNotification } from './reducers/notificationReducer.js';
 
 const App = () => {
   const dispatch = useDispatch();
-  const blogs = useSelector(({ blogs }) => blogs);
-  const user = useSelector((state) => state.user);
 
-  const blogFormRef = useRef();
+  const user = useSelector((state) => state.user);
   const loginFormRef = useRef();
 
   const login = async (loginObject) => {
@@ -38,22 +38,16 @@ const App = () => {
     }
   };
 
+  const logout = () => {
+    window.localStorage.removeItem('appUser');
+    dispatch(removeUser());
+  };
+
   const loginForm = () => (
     <Toggable buttonLabel="login" id="login" ref={loginFormRef}>
       <LoginForm login={login} />
     </Toggable>
   );
-
-  const blogForm = () => (
-    <Toggable buttonLabel="new blog" ref={blogFormRef}>
-      <AddBlogForm />
-    </Toggable>
-  );
-
-  const logout = () => {
-    window.localStorage.removeItem('appUser');
-    dispatch(removeUser());
-  };
 
   useEffect(() => {
     if (user === null) {
@@ -71,23 +65,31 @@ const App = () => {
   }, []);
 
   return (
-    <>
+    <Router>
       <Notification />
-      <h2>blogs</h2>
-      {!user && <>{loginForm()}</>}
-
       {user && (
         <div>
-          <p>
-            User logged in {user.name} <button onClick={logout}>Log out</button>
-          </p>
-          {blogForm()}
+          <a href="/" style={{ marginRight: '10px' }}>
+            blogs
+          </a>
+          <a href="/users" style={{ marginRight: '10px' }}>
+            users
+          </a>
+          <span>
+            {user.name} logged in <button onClick={logout}>Log out</button>
+          </span>
         </div>
       )}
-      <UserList />
+      {!user && <>{loginForm()}</>}
 
-      {user && blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
-    </>
+      <h2>blog app</h2>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/users" element={<UserList />} />
+        <Route path="/users/:id" element={<User />} />
+        <Route path="/blogs/:id" element={<Blog />} />
+      </Routes>
+    </Router>
   );
 };
 
