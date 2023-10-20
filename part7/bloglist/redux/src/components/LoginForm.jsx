@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Notification from './Notification';
+import { Form, Button } from 'react-bootstrap';
 
 const LoginForm = ({ login }) => {
   const [username, setUsername] = useState('');
@@ -19,31 +19,28 @@ const LoginForm = ({ login }) => {
     <>
       <h3>Log in to application</h3>
 
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
+      <Form onSubmit={handleLogin}>
+        <Form.Group>
+          <Form.Label>Username:</Form.Label>
+          <Form.Control
+            required
             type="text"
+            name="username"
             value={username}
-            name="Username"
-            id="username"
-            onChange={({ target }) => setUsername(target.value)}
+            onChange={(e) => setUsername(e.target.value)}
           />
-        </div>
-        <div>
-          password
-          <input
+          <Form.Label>password:</Form.Label>
+          <Form.Control
+            required
             type="password"
             value={password}
-            name="Password"
-            id="password"
-            onChange={({ target }) => setPassword(target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
-        </div>
-        <button type="submit" id="login-button">
-          login
-        </button>
-      </form>
+          <Button variant="primary" type="submit">
+            login
+          </Button>
+        </Form.Group>
+      </Form>
     </>
   );
 };

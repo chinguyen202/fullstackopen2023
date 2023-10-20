@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import AddBlogForm from './AddBlogForm';
 import Toggable from './Toggable';
+import Table from 'react-bootstrap/Table';
 
 const Home = () => {
-  const blogs = useSelector(({ blogs }) => blogs);
+  const { blogs, user } = useSelector((state) => state);
   const blogFormRef = useRef();
 
   const blogForm = () => (
@@ -13,22 +14,26 @@ const Home = () => {
       <AddBlogForm />
     </Toggable>
   );
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  };
+
+  if (!user) return null;
 
   return (
-    <div>
+    <div className="container">
+      <h2>blog app</h2>
+
       <div>{blogForm()}</div>
-      {blogs.map((blog) => (
-        <p style={blogStyle} key={blog.id}>
-          <Link to={`blogs/${blog.id}`}>{blog.title}</Link>
-        </p>
-      ))}
+      <Table striped>
+        <tbody>
+          {blogs.map((blog) => (
+            <tr key={blog.id}>
+              <td>
+                <Link to={`blogs/${blog.id}`}>{blog.title}</Link>
+              </td>
+              <td>{blog.user.name}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </div>
   );
 };

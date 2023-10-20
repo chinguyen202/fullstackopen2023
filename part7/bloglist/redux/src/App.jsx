@@ -14,6 +14,7 @@ import Blog from './components/Blog';
 import UserList from './components/UserList';
 import loginService from './services/login';
 import { handleNotification } from './reducers/notificationReducer.js';
+import { Navbar, Nav } from 'react-bootstrap';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -68,21 +69,20 @@ const App = () => {
     <Router>
       <Notification />
       {user && (
-        <div>
-          <a href="/" style={{ marginRight: '10px' }}>
+        <Navbar expand="lg" className="bg-body-tertiary">
+          <Nav.Link href="/" style={{ marginRight: '10px' }}>
             blogs
-          </a>
-          <a href="/users" style={{ marginRight: '10px' }}>
+          </Nav.Link>
+          <Nav.Link href="/users" style={{ marginRight: '10px' }}>
             users
-          </a>
-          <span>
+          </Nav.Link>
+          <em>
             {user.name} logged in <button onClick={logout}>Log out</button>
-          </span>
-        </div>
+          </em>
+        </Navbar>
       )}
       {!user && <>{loginForm()}</>}
 
-      <h2>blog app</h2>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<UserList />} />

@@ -1,19 +1,21 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Table } from 'react-bootstrap';
 import { initializeUsers } from '../reducers/usersReducer';
 
 const UserList = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const users = useSelector((state) => state.users);
   useEffect(() => {
-    dispatch(initializeUsers()), [];
-  });
-  if (users === null) return null;
+    dispatch(initializeUsers());
+  }, [dispatch, users]);
+  if (user === null || users === null) return null;
   return (
     <div>
-      <table>
+      <Table striped>
         <thead>
           <tr>
             <th>{}</th>
@@ -24,13 +26,13 @@ const UserList = () => {
           {users.map((user, index) => (
             <tr key={index}>
               <td>
-                <Link to={`users/${user.id}`}>{user.name}</Link>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
               </td>
               <td>{user.blogs.length}</td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 };

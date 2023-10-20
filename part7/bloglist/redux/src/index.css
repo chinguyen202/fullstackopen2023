@@ -21,7 +21,7 @@
 .hideWhenVisible,
 .hideFormWhenVisible,
 .hideBlogWhenVisible {
-  display: "none";
+  display: 'none';
 }
 
 .showWhenVisible,
