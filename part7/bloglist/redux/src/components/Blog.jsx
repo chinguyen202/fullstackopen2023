@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { likeBlog, removeBlog } from '../reducers/blogReducer';
 import { handleNotification } from '../reducers/notificationReducer';
+import blogs from '../services/blogs';
 
 const Blog = () => {
   const { id } = useParams();
@@ -46,11 +48,42 @@ const Blog = () => {
     }
   };
 
+  const postComment = async (event) => {
+    event.preventDefault();
+    const comment = event.target[0].value;
+    try {
+      await blogs.addComment(comment, blog.id);
+      dispatch(
+        handleNotification(
+          {
+            message: 'Successfully added comment',
+            error: false,
+          },
+          5000
+        )
+      );
+    } catch (error) {
+      dispatch(
+        handleNotification(
+          handleNotification({
+            message: error.response,
+            error: true,
+          }),
+          5000
+        )
+      );
+      console.error('error adding a comment', error);
+    }
+  };
+
   return (
     <div className="blog">
       <div>
         <h2>
-          {blog.title} - {blog.author}{' '}
+          {blog.title} - {blog.author}
+          {showButton && (
+            <button onClick={() => deleteBlog(blog.id)}>Remove</button>
+          )}
         </h2>
         <p>
           {blog.likes} likes
@@ -60,9 +93,18 @@ const Blog = () => {
         </p>
         <a href={blog.url}>{blog.url}</a>
         <p>added by {blog.user.name}</p>
-        {showButton && (
-          <button onClick={() => deleteBlog(blog.id)}>Remove</button>
-        )}
+      </div>
+      <div>
+        <h3>Comments</h3>
+        <form onSubmit={postComment}>
+          <input type="text" />
+          <button type="submit">Add comment</button>
+        </form>
+        <ul>
+          {blog.comments.map((comment) => (
+            <li key={blog.id}>{comment}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );

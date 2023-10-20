@@ -62,7 +62,7 @@ const App = () => {
       blogService.setToken(user.token);
       dispatch(initializeBlogs());
     }
-  }, []);
+  }, [dispatch, user]);
 
   return (
     <Router>
